@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro" name="single_inverted_pendulum_URDF">
+
+    <xacro:include filename="inertial_macros.xacro" />
+    <xacro:include filename="pendulum_params.xacro" />
+    <xacro:include filename="robot_material.xacro" />
+    <xacro:include filename="gazebo_single.xacro" />
+    
+    <!-- WORLD LINK (Fixed to ground) -->
+    <link name="world"/>
+    
+    <!-- FIXED JOINT - RAISED TO PREVENT GROUND COLLISION -->
+    <joint name="base" type="fixed">
+        <parent link="world"/>
+        <child link="base_link"/>
+        <!-- Raised by 0.5m to keep pendulum above ground when hanging down -->
+        <origin xyz="0 0 0.5" rpy="0 0 0"/>
+    </joint>
+    
+    <!-- BASE LINK -->
+    <link name="base_link">
+        <xacro:inertial_box mass="${mass_base}" x="0.25" y="0.15" z="0.18">
+            <origin xyz="4.35011143188239E-06 -4.26974202710915E-05 0.0926893522450359" rpy="0 0 0" />
+        </xacro:inertial_box>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://single_inverted_pendulum_description/meshes/base_link.STL" />
+            </geometry>
+            <material name="light_blue"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0.09" rpy="0 0 0" />
+            <geometry>
+                <box size="0.25 0.15 0.18"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- REVOLUTE LINK (ARM - CONTINUOUS ROTATION) -->
+    <joint name="revolute_joint" type="continuous">
+        <parent link="base_link"/>
+        <child link="revolute_Link"/>
+        <origin xyz="${revolute_joint_x} ${revolute_joint_y} ${revolute_joint_z}" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="${joint_effort}" velocity="${joint_velocity}"/>
+        <dynamics damping="${revolute_joint_damping}" friction="${revolute_joint_friction}"/>
+    </joint>
+
+    <link name="revolute_Link">
+        <xacro:inertial_cylinder mass="${mass_revolute}" length="0.05" radius="0.03">
+            <origin xyz="-0.0393104703 -0.0011200394 -0.0049654099" rpy="0 0 0" />
+        </xacro:inertial_cylinder>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://single_inverted_pendulum_description/meshes/revolute_Link.STL" />
+            </geometry>
+            <material name="brown"/>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <cylinder radius="0.03" length="0.05"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <!-- FIRST PENDULUM LINK (ONLY PENDULUM) -->
+    <joint name="first_pendulum_joint" type="revolute">
+        <parent link="revolute_Link"/>
+        <child link="first_pendulum_link"/>
+        <origin xyz="${pendulum1_joint_x} ${pendulum1_joint_y} ${pendulum1_joint_z}" rpy="1.5708 0 -1.5708"/>
+        <axis xyz="0 0 1"/>
+        <limit effort="100.0" velocity="100.0" lower="${joint_lower_limit}" upper="${joint_upper_limit}"/>
+        <dynamics damping="${first_pendulum_damping}" friction="${first_pendulum_friction}"/>
+    </joint>
+
+    <link name="first_pendulum_link">
+        <xacro:inertial_box mass="${mass_pendulum1}" x="0.02" y="0.14" z="0.02">
+            <origin xyz="-0.0000001372 -0.0878320187 0.0001351167" rpy="0 0 0" />
+        </xacro:inertial_box>
+
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <mesh filename="package://single_inverted_pendulum_description/meshes/first_pendulum_link.STL" />
+            </geometry>
+            <material name="brown"/>
+        </visual>
+        <collision>
+            <origin xyz="0 -0.065 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.02 0.14 0.02"/>
+            </geometry>
+        </collision>
+    </link>
+
+</robot>

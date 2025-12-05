@@ -32,10 +32,10 @@
     # SWING-UP - VERY AGGRESSIVE
     # ============================================================
     
-    energy_gain: 20.00      # VERY HIGH (was 8.0, then 15.0)
+    energy_gain: 5.00      # VERY HIGH (was 8.0, then 15.0)
     damping_gain: 0.11      # VERY LOW (let it swing!)
-    kick_torque: 3.0        # Initial kick to START motion (critical!)
-    swing_up_max_torque: 15.0  # HIGH limit
+    kick_torque: 5.0        # Initial kick to START motion (critical!)
+    swing_up_max_torque: 10.0  # HIGH limit
     
     # ============================================================
     # MODE SWITCHING - RELAXED

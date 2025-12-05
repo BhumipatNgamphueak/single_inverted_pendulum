@@ -487,23 +487,7 @@ finally:
   - α = π: Upright (unstable equilibrium, target)
   - α ≈ 6.28 (2π): Also hanging down (wrapped)
 
-### 2. Energy Calculation
-
-```python
-# Potential energy (zero at bottom)
-pe = M1 * g * l1 * (1.0 - cos(alpha))
-
-# Kinetic energy
-ke = 0.5 * M1 * (l1 * alpha_dot)**2
-
-# Total energy
-E_current = pe + ke
-
-# Desired energy (upright position)
-E_desired = M1 * g * (2.0 * l1)
-```
-
-### 3. Swing-Up Control Law
+### 2. Swing-Up Control Law
 
 ```python
 # Energy error
@@ -525,7 +509,7 @@ tau = u_energy + u_damping
 
 **Key Insight:** The `alpha_dot * cos(alpha)` term ensures energy is pumped in phase with pendulum motion.
 
-### 4. LQR Stabilization
+### 3. LQR Stabilization
 
 ```python
 # State error (relative to setpoint)
@@ -541,7 +525,7 @@ tau = -K @ x_error
 
 **Setpoint Tracking:** The system captures `theta_setpoint` when switching to STABILIZE mode, preventing drift.
 
-### 5. Mode Switching Logic
+### 4. Mode Switching Logic
 
 **Condition to switch SWING_UP → STABILIZE:**
 ```python
@@ -555,7 +539,7 @@ stable_time = counter >= (0.15s * 100Hz)  # Stable for 15 samples
 alpha_dist = abs(wrap_to_pi(alpha - pi)) > 0.8  # Fallen too far
 ```
 
-### 6. Kick Mechanism
+### 5. Kick Mechanism
 
 Initial impulse to break stiction and start motion:
 ```python

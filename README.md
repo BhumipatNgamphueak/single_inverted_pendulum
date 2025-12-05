@@ -487,23 +487,7 @@ finally:
   - α = π: Upright (unstable equilibrium, target)
   - α ≈ 6.28 (2π): Also hanging down (wrapped)
 
-### 2. Energy Calculation
-
-```python
-# Potential energy (zero at bottom)
-pe = M1 * g * l1 * (1.0 - cos(alpha))
-
-# Kinetic energy
-ke = 0.5 * M1 * (l1 * alpha_dot)**2
-
-# Total energy
-E_current = pe + ke
-
-# Desired energy (upright position)
-E_desired = M1 * g * (2.0 * l1)
-```
-
-### 3. Swing-Up Control Law
+### 2. Swing-Up Control Law
 
 ```python
 # Energy error
@@ -525,7 +509,7 @@ tau = u_energy + u_damping
 
 **Key Insight:** The `alpha_dot * cos(alpha)` term ensures energy is pumped in phase with pendulum motion.
 
-### 4. LQR Stabilization
+### 3. LQR Stabilization
 
 ```python
 # State error (relative to setpoint)
@@ -541,7 +525,7 @@ tau = -K @ x_error
 
 **Setpoint Tracking:** The system captures `theta_setpoint` when switching to STABILIZE mode, preventing drift.
 
-### 5. Mode Switching Logic
+### 4. Mode Switching Logic
 
 **Condition to switch SWING_UP → STABILIZE:**
 ```python
@@ -555,7 +539,7 @@ stable_time = counter >= (0.15s * 100Hz)  # Stable for 15 samples
 alpha_dist = abs(wrap_to_pi(alpha - pi)) > 0.8  # Fallen too far
 ```
 
-### 6. Kick Mechanism
+### 5. Kick Mechanism
 
 Initial impulse to break stiction and start motion:
 ```python
@@ -565,112 +549,6 @@ if not kick_applied:
         return kick_torque  # 5.0 Nm
     else:
         kick_applied = True
-```
-
-## AI Assistant Guidelines
-
-### When Modifying Controllers
-
-1. **Test Incrementally:**
-   - Change one parameter at a time
-   - Verify in simulation before hardware
-   - Document changes in YAML config
-
-2. **Preserve Safety Features:**
-   - Never remove torque saturation
-   - Keep fall detection logic
-   - Always publish zero on shutdown
-
-3. **Maintain Control Frequency:**
-   - 100 Hz is critical for stability
-   - Use `time.sleep()` to maintain rate
-   - Avoid blocking operations in control loop
-
-4. **Respect Physical Limits:**
-   - Don't set torques above hardware limits
-   - Consider inertia and friction
-   - Test gains in simulation first
-
-### When Adding Features
-
-1. **Follow Distributed Pattern:**
-   - New controllers → separate nodes
-   - Publish to intermediate topics
-   - Manager node arbitrates
-
-2. **Parameter Configuration:**
-   - Add parameters to YAML file
-   - Use `declare_parameter()` in node
-   - Document units and ranges
-
-3. **Logging Best Practices:**
-   ```python
-   self.get_logger().info('Informational message')
-   self.get_logger().warn('Warning message')
-   self.get_logger().error('Error message')
-   ```
-
-4. **Testing Checklist:**
-   - [ ] Build succeeds (`colcon build`)
-   - [ ] Node starts without errors
-   - [ ] Topics published/subscribed correctly
-   - [ ] Control loop runs at target frequency
-   - [ ] Zero torques on shutdown
-
-### Common Pitfalls to Avoid
-
-1. **Don't use raw velocities in swing-up:** Causes oscillations → filter them
-2. **Don't switch modes too quickly:** Use stabilization counter
-3. **Don't forget angle wrapping:** Causes discontinuities
-4. **Don't publish NaN or Inf:** Add validation checks
-5. **Don't block in callbacks:** Use spin_once() with timeout=0.0
-6. **Don't hardcode file paths:** Use FindPackageShare and PathJoinSubstitution
-
-### Debugging Tips
-
-**Problem:** Pendulum doesn't swing up
-- Check: `kick_torque` and `energy_gain`
-- Verify: `/effort_controller/commands` is being published
-- Monitor: Energy ratio in logs
-
-**Problem:** Pendulum swings up but doesn't stabilize
-- Check: LQR gains (especially `K_alpha`)
-- Verify: Mode switches to STABILIZE
-- Check: `switch_to_lqr_angle` threshold
-
-**Problem:** Stabilization is shaky
-- Increase: Velocity filtering (`alpha` parameter)
-- Adjust: `K_alpha_dot` (damping gain)
-- Reduce: `lqr_max_torque` to avoid saturation
-
-**Problem:** Controllers not receiving joint states
-- Check: `joint_state_broadcaster` is loaded
-- Verify: Joint names match ("revolute_joint", "first_pendulum_joint")
-- Monitor: `ros2 topic hz /joint_states` (should be ~1000 Hz)
-
-## Git Workflow
-
-**When Making Changes:**
-1. Create a feature branch
-2. Make incremental commits with clear messages
-3. Push to remote: `git push -u origin <branch-name>`
-4. Test changes in simulation before committing
-
-**Commit Message Style:**
-```
-Brief description (imperative mood)
-
-- Detail 1
-- Detail 2
-```
-
-Example:
-```
-Increase LQR gains for better stability
-
-- K_alpha: 9.24 → 11.24
-- Tested in simulation with 0.5 Nm disturbance
-- Stabilization time reduced from 2.5s to 1.8s
 ```
 
 ## Additional Resources
@@ -691,15 +569,3 @@ Increase LQR gains for better stability
 - Examine launch files for system startup sequence
 
 ---
-
-## 📝 License
-
-TODO: License declaration
-
-## 👤 Maintainer
-
-teacher@todo.todo
-
-## 📅 Last Updated
-
-2025-12-05

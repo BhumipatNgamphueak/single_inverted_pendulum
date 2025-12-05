@@ -33,7 +33,18 @@ colcon build
 source install/setup.bash
 ```
 
-### Run Simulation (Monolithic Controller)
+### Make Sourcing Permanent (Optional)
+
+To avoid sourcing the workspace in every new terminal, add this line to your `~/.bashrc`:
+
+```bash
+echo "source ~/single_inverted_pendulum/install/setup.bash" >> ~/.bashrc
+source ~/.bashrc
+```
+
+**Note:** Adjust the path if your workspace is located elsewhere. This will automatically source the workspace whenever you open a new terminal.
+
+### Run Simulation
 
 **Terminal 1 - Launch Gazebo simulation:**
 ```bash
@@ -47,22 +58,6 @@ ros2 launch single_inverted_pendulum_simulation simulation_single_launch.py
 cd single_inverted_pendulum
 source install/setup.bash
 ros2 launch single_inverted_pendulum swingup_controller.launch.py
-```
-
-### Run Simulation (Distributed Controllers)
-
-**Terminal 1 - Launch Gazebo simulation:**
-```bash
-cd single_inverted_pendulum
-source install/setup.bash
-ros2 launch single_inverted_pendulum_simulation simulation_single_launch.py
-```
-
-**Terminal 2 - Launch distributed control system (wait 5-7 seconds):**
-```bash
-cd single_inverted_pendulum
-source install/setup.bash
-ros2 launch single_inverted_pendulum distributed_controller.launch.py
 ```
 
 ### Monitor the System
@@ -90,7 +85,7 @@ This is a **ROS 2** robotics project implementing a **single inverted pendulum c
 **Key Features:**
 - Energy-regulated swing-up controller with kick mechanism
 - LQR stabilization for upright position
-- Distributed control architecture (4 independent nodes)
+- Monolithic control architecture with integrated state machine
 - Gazebo simulation with ros2_control integration
 - Configurable disturbance injection for robustness testing
 
@@ -127,48 +122,22 @@ single_inverted_pendulum/
 ├── config/
 │   └── single_pendulum_swingup_params.yaml  # Controller parameters
 ├── launch/
-│   ├── swingup_controller.launch.py       # Single-node controller
-│   └── distributed_controller.launch.py   # 4-node distributed system
+│   └── swingup_controller.launch.py       # Controller launch file
 ├── scripts/
-│   ├── single_pendulum_swingup_controller.py  # Monolithic controller
-│   ├── energy_swingup_node.py            # Node 1: Energy-based swing-up
-│   ├── lqr_stabilizer_node.py            # Node 2: LQR stabilizer
-│   ├── disturbance_node.py               # Node 3: Disturbance generator
-│   └── manager_node.py                   # Node 4: Coordinator/arbiter
+│   └── single_pendulum_swingup_controller.py  # Main controller
 └── single_inverted_pendulum/             # Python package (mostly empty)
     ├── __init__.py
     └── dummy_module.py
 ```
 
-**Controller Nodes:**
+**Controller:**
 
-1. **`single_pendulum_swingup_controller.py`** - Monolithic controller combining all logic
-   - Energy-regulated swing-up with kick start
-   - LQR stabilization
-   - Mode switching logic
-   - Disturbance injection
-   - **Use case:** Simple deployment, single-process control
-
-2. **`energy_swingup_node.py`** - Energy-based swing-up (distributed)
-   - Computes swing-up torque continuously
-   - Publishes to `/control/swingup_effort`
-   - Implements kick mechanism (initial impulse)
-
-3. **`lqr_stabilizer_node.py`** - LQR stabilizer (distributed)
-   - Computes stabilization torque for upright position
-   - Publishes to `/control/lqr_effort`
-   - Receives setpoint from manager via `/control/theta_setpoint`
-
-4. **`disturbance_node.py`** - Disturbance generator (distributed)
-   - Injects torque pulse after stabilization delay
-   - Publishes to `/control/disturbance_effort`
-   - Tests controller robustness
-
-5. **`manager_node.py`** - Coordinator node (distributed)
-   - Mode switching (SWING_UP ↔ STABILIZE)
-   - Arbitrates between controllers
-   - Captures and broadcasts theta setpoint
-   - Publishes final commands to `/effort_controller/commands`
+**`single_pendulum_swingup_controller.py`** - Main controller implementing all control logic
+- Energy-regulated swing-up with kick start mechanism
+- LQR stabilization for upright position
+- Integrated mode switching logic (SWING_UP ↔ STABILIZE)
+- Built-in disturbance injection for robustness testing
+- Single-process architecture for simple deployment
 
 ### 2. `single_inverted_pendulum_description` (Robot Description)
 
@@ -221,8 +190,6 @@ single_inverted_pendulum_simulation/
 
 ## Control System Architecture
 
-### Monolithic Architecture (Simple)
-
 ```
 single_pendulum_swingup_controller.py
           ↓
@@ -236,32 +203,11 @@ single_pendulum_swingup_controller.py
     /effort_controller/commands (output)
 ```
 
-### Distributed Architecture (Advanced)
-
-```
-                    /joint_states
-                          ↓
-    ┌─────────────────────┼─────────────────────┐
-    ↓                     ↓                     ↓
-energy_swingup_node   lqr_stabilizer   disturbance_node
-    ↓                     ↓                     ↓
-/control/            /control/            /control/
-swingup_effort       lqr_effort       disturbance_effort
-    ↓                     ↓                     ↓
-    └─────────────────────┼─────────────────────┘
-                          ↓
-                    manager_node
-                          ↓
-              [Mode State Machine]
-                          ↓
-           /effort_controller/commands
-```
-
-**Benefits of Distributed Architecture:**
-- Independent controller development/testing
-- Parallel computation
-- Modular design
-- Easier debugging (isolated nodes)
+**Architecture Features:**
+- Single-process monolithic design
+- Integrated state machine for mode switching
+- Direct sensor-to-actuator control loop
+- Simple deployment and debugging
 
 ## Key Configuration Parameters
 
@@ -314,16 +260,6 @@ disturbance_torque: 0.0       # Torque magnitude (Nm)
   - Index 0: Torque on revolute_joint (actuated)
   - Index 1: Torque on first_pendulum_joint (passive, usually 0)
 
-### Intermediate Topics (Distributed Architecture)
-- `/control/swingup_effort` (std_msgs/Float64) - Swing-up torque
-- `/control/lqr_effort` (std_msgs/Float64) - LQR torque
-- `/control/disturbance_effort` (std_msgs/Float64) - Disturbance torque
-- `/control/theta_setpoint` (std_msgs/Float64) - Captured theta setpoint
-- `/controller_mode` (std_msgs/String) - Current mode ("SWING_UP" or "STABILIZE")
-
-### Debug Topics
-- `/swingup_lqr_debug` - Debug information (if enabled)
-
 ## Development Workflow
 
 ### Building the Project
@@ -346,7 +282,6 @@ source install/setup.bash
 
 ### Running Simulations
 
-**Option 1: Full simulation + monolithic controller**
 ```bash
 # Terminal 1: Launch Gazebo simulation
 ros2 launch single_inverted_pendulum_simulation simulation_single_launch.py
@@ -355,32 +290,17 @@ ros2 launch single_inverted_pendulum_simulation simulation_single_launch.py
 ros2 launch single_inverted_pendulum swingup_controller.launch.py
 ```
 
-**Option 2: Full simulation + distributed controllers**
-```bash
-# Terminal 1: Launch Gazebo simulation
-ros2 launch single_inverted_pendulum_simulation simulation_single_launch.py
-
-# Terminal 2: Launch distributed system (after controllers load)
-ros2 launch single_inverted_pendulum distributed_controller.launch.py
-```
-
 **Important Timing Notes:**
 - Gazebo needs ~3 seconds to initialize ros2_control
 - `joint_state_broadcaster` loads at t=3s
 - `effort_controller` loads at t=5s
 - Start control nodes after t=5s
 
-### Testing Individual Controllers
+### Testing the Controller
 
 ```bash
-# Test energy swing-up node only
-ros2 run single_inverted_pendulum energy_swingup_node.py
-
-# Test LQR stabilizer only
-ros2 run single_inverted_pendulum lqr_stabilizer_node.py
-
-# Test manager only
-ros2 run single_inverted_pendulum manager_node.py
+# Run the controller directly (for debugging)
+ros2 run single_inverted_pendulum single_pendulum_swingup_controller.py
 ```
 
 ### Monitoring System
@@ -391,9 +311,6 @@ ros2 topic echo /joint_states
 
 # View effort commands
 ros2 topic echo /effort_controller/commands
-
-# View controller mode (distributed)
-ros2 topic echo /controller_mode
 
 # List all active topics
 ros2 topic list

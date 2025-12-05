@@ -28,10 +28,6 @@ ament_python_install_package(${PROJECT_NAME})
 # Install Python executables
 install(PROGRAMS
   scripts/single_pendulum_swingup_controller.py
-  scripts/disturbance_node.py
-  scripts/energy_swingup_node.py
-  scripts/lqr_stabilizer_node.py
-  scripts/manager_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

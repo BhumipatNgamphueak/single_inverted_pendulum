@@ -4,7 +4,7 @@ A **ROS 2** robotics project implementing energy-based swing-up and LQR stabiliz
 
 ![ROS 2](https://img.shields.io/badge/ROS_2-Humble-blue)
 ![Python](https://img.shields.io/badge/Python-3.8+-green)
-![Gazebo](https://img.shields.io/badge/Gazebo-Harmonic-orange)
+![Gazebo](https://img.shields.io/badge/Gazebo-Fortress-orange)
 
 ---
 

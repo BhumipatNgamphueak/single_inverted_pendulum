@@ -33,6 +33,20 @@ colcon build
 source install/setup.bash
 ```
 
+### Troubleshooting: Mesh Loading Issues
+
+If you encounter errors like `Unable to find file with URI [model://single_inverted_pendulum_description/meshes/...]`, this means Gazebo cannot find the robot mesh files. This is already fixed in the latest version of the launch file.
+
+**Solution:** Make sure you have the latest version and rebuild:
+```bash
+cd single_inverted_pendulum
+git pull  # Get latest updates
+colcon build --packages-select single_inverted_pendulum_simulation
+source install/setup.bash
+```
+
+The launch file now automatically sets the `GZ_SIM_RESOURCE_PATH` environment variable to help Gazebo locate the mesh files.
+
 ### Make Sourcing Permanent (Optional)
 
 To avoid sourcing the workspace in every new terminal, add this line to your `~/.bashrc`:

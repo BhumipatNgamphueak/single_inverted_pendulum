@@ -2,12 +2,13 @@
 """
 Launch file for Single Inverted Pendulum in Gazebo
 FIXED: Added delays for proper controller loading
+FIXED: Added GZ_SIM_RESOURCE_PATH for mesh loading
 """
 
 import os
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, RegisterEventHandler, TimerAction
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, RegisterEventHandler, TimerAction, SetEnvironmentVariable
 from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -16,11 +17,19 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    
+
     # Package directories
+    desc_pkg_path = get_package_share_directory('single_inverted_pendulum_description')
     desc_pkg = FindPackageShare('single_inverted_pendulum_description')
     sim_pkg = FindPackageShare('single_inverted_pendulum_simulation')
     gazebo_ros_share = FindPackageShare('ros_gz_sim')
+
+    # Set Gazebo resource path to find meshes
+    # This allows Gazebo to resolve model:// URIs
+    gz_resource_path = SetEnvironmentVariable(
+        name='GZ_SIM_RESOURCE_PATH',
+        value=desc_pkg_path
+    )
     
     # Paths
     xacro_file = PathJoinSubstitution([
@@ -128,6 +137,7 @@ def generate_launch_description():
     return LaunchDescription([
         use_sim_time_arg,
         world_arg,
+        gz_resource_path,  # Set resource path before launching Gazebo
         robot_state_publisher,
         gazebo,
         spawn_entity,

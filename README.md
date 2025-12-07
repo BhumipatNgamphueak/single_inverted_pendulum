@@ -143,7 +143,7 @@ source install/setup.bash
 - The launch file now automatically sets the `GZ_SIM_RESOURCE_PATH` environment variable to help Gazebo locate mesh files using `model://` URIs
 - The `model.config` file is properly installed to register the package as a Gazebo model
 
-### Make Sourcing Permanent (Optional)
+### Make Sourcing Permanent 
 
 To avoid sourcing the workspace in every new terminal, add this line to your `~/.bashrc`:
 

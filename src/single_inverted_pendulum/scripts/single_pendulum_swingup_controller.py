@@ -63,7 +63,7 @@ class SinglePendulumLoopController(Node):
         # EXTERNAL DISTURBANCE PARAMETERS
         # ============================================================
         self.disturbance_delay = 5.0           # Wait 5s after stabilization
-        self.disturbance_duration = 0.15       # Brief pulse: 150ms
+        self.disturbance_duration = 0.0       # Brief pulse: 150ms
         self.disturbance_torque = 0.0          # Torque magnitude (Nm)
         
         # ============================================================

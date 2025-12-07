@@ -4,7 +4,7 @@ A **ROS 2** robotics project implementing energy-based swing-up and LQR stabiliz
 
 ![ROS 2](https://img.shields.io/badge/ROS_2-Humble-blue)
 ![Python](https://img.shields.io/badge/Python-3.8+-green)
-![Gazebo](https://img.shields.io/badge/Gazebo-Harmonic-orange)
+![Gazebo](https://img.shields.io/badge/Gazebo-Fortress-orange)
 
 ---
 
@@ -13,7 +13,7 @@ A **ROS 2** robotics project implementing energy-based swing-up and LQR stabiliz
 ### Prerequisites
 - Ubuntu 22.04 LTS
 - ROS 2 Humble
-- Gazebo Harmonic (ros_gz_sim)
+- Gazebo Fortress (Ignition Gazebo 6 / ros_gz_sim)
 - Python 3.8+
 - NumPy
 
@@ -35,17 +35,26 @@ source install/setup.bash
 
 ### Troubleshooting: Mesh Loading Issues
 
-If you encounter errors like `Unable to find file with URI [model://single_inverted_pendulum_description/meshes/...]`, this means Gazebo cannot find the robot mesh files. This is already fixed in the latest version of the launch file.
+If you encounter errors like:
+```
+[Err] Unable to find file with URI [model://single_inverted_pendulum_description/meshes/base_link.STL]
+[Err] Unable to find file with URI [model://single_inverted_pendulum_description/meshes/revolute_Link.STL]
+[Err] Unable to find file with URI [model://single_inverted_pendulum_description/meshes/first_pendulum_link.STL]
+```
+
+This means Gazebo cannot find the robot mesh files. **This is already fixed in the latest version.**
 
 **Solution:** Make sure you have the latest version and rebuild:
 ```bash
 cd single_inverted_pendulum
 git pull  # Get latest updates
-colcon build --packages-select single_inverted_pendulum_simulation
+colcon build --packages-select single_inverted_pendulum_simulation single_inverted_pendulum_description
 source install/setup.bash
 ```
 
-The launch file now automatically sets the `GZ_SIM_RESOURCE_PATH` environment variable to help Gazebo locate the mesh files.
+**What was fixed:**
+- The launch file now automatically sets the `GZ_SIM_RESOURCE_PATH` environment variable to help Gazebo locate mesh files using `model://` URIs
+- The `model.config` file is properly installed to register the package as a Gazebo model
 
 ### Make Sourcing Permanent (Optional)
 
@@ -105,7 +114,7 @@ This is a **ROS 2** robotics project implementing a **single inverted pendulum c
 
 **Technology Stack:**
 - ROS 2 Humble (Python + C++)
-- Gazebo Harmonic (ros_gz_sim)
+- Gazebo Fortress (Ignition Gazebo 6 / ros_gz_sim)
 - ros2_control framework
 - NumPy for numerical computations
 
@@ -487,7 +496,7 @@ if not kick_applied:
 ### ROS 2 Documentation
 - [ROS 2 Humble](https://docs.ros.org/en/humble/)
 - [ros2_control](https://control.ros.org/humble/index.html)
-- [Gazebo Harmonic](https://gazebosim.org/docs/harmonic)
+- [Gazebo Fortress](https://gazebosim.org/docs/fortress)
 
 ### Control Theory
 - Energy-based control for underactuated systems

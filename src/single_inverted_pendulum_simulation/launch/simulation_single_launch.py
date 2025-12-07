@@ -25,10 +25,11 @@ def generate_launch_description():
     gazebo_ros_share = FindPackageShare('ros_gz_sim')
 
     # Set Gazebo resource path to find meshes
-    # This allows Gazebo to resolve model:// URIs
+    # Gazebo uses model:// URIs, so we need to set the resource path correctly
+    # The resource path should point to where model directories are located
     gz_resource_path = SetEnvironmentVariable(
         name='GZ_SIM_RESOURCE_PATH',
-        value=desc_pkg_path
+        value=os.path.dirname(desc_pkg_path)
     )
     
     # Paths
@@ -75,7 +76,9 @@ def generate_launch_description():
         parameters=[{
             'robot_description': robot_description,
             'use_sim_time': LaunchConfiguration('use_sim_time')
-        }]
+        }],
+        # Make sure ROS package paths are available for URI resolution
+        additional_env={'GZ_SIM_RESOURCE_PATH': os.path.dirname(desc_pkg_path)}
     )
     
     # Gazebo server

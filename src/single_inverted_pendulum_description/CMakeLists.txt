@@ -50,8 +50,13 @@ install(DIRECTORY
   # add directories here
   config
   launch
-  meshes         # ← ADD THIS LINE!
+  meshes
   robot
+  DESTINATION share/${PROJECT_NAME})
+
+# Install model.config for Gazebo
+install(FILES
+  model.config
   DESTINATION share/${PROJECT_NAME})
 
 ament_package()

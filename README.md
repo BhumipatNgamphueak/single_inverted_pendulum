@@ -18,6 +18,8 @@ A **ROS 2** robotics project implementing energy-based swing-up and LQR stabiliz
 - Ubuntu 22.04 LTS
 - Python 3.8+
 
+**Note:** If you already have these libraries installed, you can skip directly to the [Clone and Build](#clone-and-build) step.
+
 #### Required ROS 2 Packages
 
 **Core ROS 2 Installation:**

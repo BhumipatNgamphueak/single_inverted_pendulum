@@ -5,17 +5,87 @@ A **ROS 2** robotics project implementing energy-based swing-up and LQR stabiliz
 ![ROS 2](https://img.shields.io/badge/ROS_2-Humble-blue)
 ![Python](https://img.shields.io/badge/Python-3.8+-green)
 ![Gazebo](https://img.shields.io/badge/Gazebo-Fortress-orange)
+![NumPy](https://img.shields.io/badge/NumPy-1.19+-blue)
+![ros2_control](https://img.shields.io/badge/ros2__control-Humble-green)
 
 ---
 
 ## 🚀 Quick Start
 
 ### Prerequisites
+
+#### System Requirements
 - Ubuntu 22.04 LTS
-- ROS 2 Humble
-- Gazebo Fortress (Ignition Gazebo 6 / ros_gz_sim)
 - Python 3.8+
-- NumPy
+
+#### Required ROS 2 Packages
+
+**Core ROS 2 Installation:**
+```bash
+# Install ROS 2 Humble (if not already installed)
+sudo apt update
+sudo apt install -y software-properties-common
+sudo add-apt-repository universe
+sudo apt update && sudo apt install -y curl gnupg lsb-release
+
+# Add ROS 2 GPG key
+sudo curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+
+# Add repository to sources list
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(source /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+# Install ROS 2 Humble Desktop
+sudo apt update
+sudo apt install -y ros-humble-desktop
+```
+
+**Gazebo and Simulation Dependencies:**
+```bash
+# Install Gazebo Fortress (Ignition Gazebo)
+sudo apt install -y ros-humble-ros-gz-sim ros-humble-ros-gz-bridge
+sudo apt install -y ros-humble-gazebo-ros ros-humble-gazebo-ros2-control
+```
+
+**Control and Hardware Interface:**
+```bash
+# Install ros2_control packages
+sudo apt install -y ros-humble-ros2-control ros-humble-ros2-controllers
+sudo apt install -y ros-humble-controller-manager
+sudo apt install -y ros-humble-joint-state-broadcaster
+sudo apt install -y ros-humble-effort-controllers
+```
+
+**Robot Description Tools:**
+```bash
+# Install URDF/xacro and visualization tools
+sudo apt install -y ros-humble-xacro ros-humble-urdf
+sudo apt install -y ros-humble-joint-state-publisher
+sudo apt install -y ros-humble-joint-state-publisher-gui
+sudo apt install -y ros-humble-robot-state-publisher
+sudo apt install -y ros-humble-rviz2
+```
+
+**Python Dependencies:**
+```bash
+# Install NumPy for control computations
+sudo apt install -y python3-numpy python3-pip
+
+# Optional: Install additional Python scientific libraries
+pip3 install scipy matplotlib
+```
+
+**Build Tools:**
+```bash
+# Install colcon build tools
+sudo apt install -y python3-colcon-common-extensions
+sudo apt install -y python3-rosdep
+
+# Initialize rosdep (if not already done)
+sudo rosdep init
+rosdep update
+```
+
+**Note:** If you already have these libraries installed, you can skip directly to the [Clone and Build](#clone-and-build) step.
 
 ### Clone and Build
 
@@ -26,10 +96,25 @@ git clone https://github.com/BhumipatNgamphueak/single_inverted_pendulum.git
 # Navigate to workspace
 cd single_inverted_pendulum
 
+# Install dependencies using rosdep (recommended)
+rosdep install --from-paths src --ignore-src -r -y
+
 # Build all packages
 colcon build
 
 # Source the workspace
+source install/setup.bash
+```
+
+**Alternative: One-line Installation Script**
+
+For a quick setup, you can use this comprehensive installation script:
+
+```bash
+# Complete installation (run from workspace root)
+sudo apt update && \
+rosdep install --from-paths src --ignore-src -r -y && \
+colcon build && \
 source install/setup.bash
 ```
 
@@ -117,6 +202,46 @@ This is a **ROS 2** robotics project implementing a **single inverted pendulum c
 - Gazebo Fortress (Ignition Gazebo 6 / ros_gz_sim)
 - ros2_control framework
 - NumPy for numerical computations
+
+## Dependencies Summary
+
+### ROS 2 Package Dependencies
+
+All three packages (`single_inverted_pendulum`, `single_inverted_pendulum_description`, `single_inverted_pendulum_simulation`) have been updated with proper dependencies in their `package.xml` files:
+
+**Control Package Dependencies:**
+- `rclcpp`, `rclpy` - ROS 2 client libraries
+- `std_msgs`, `sensor_msgs`, `geometry_msgs` - Message types
+- `controller_manager`, `ros2_control`, `ros2_controllers` - Control framework
+- `python3-numpy` - Numerical computations
+
+**Description Package Dependencies:**
+- `urdf`, `xacro` - Robot description tools
+- `rviz2` - Visualization
+- `joint_state_publisher`, `robot_state_publisher` - State publishing
+- `ros2_control`, `gazebo_ros2_control` - Hardware interfaces
+
+**Simulation Package Dependencies:**
+- `gazebo_ros`, `gazebo_ros2_control` - Gazebo integration
+- `ros_gz_sim`, `ros_gz_bridge` - Gazebo Fortress bridge
+- `joint_state_broadcaster`, `effort_controllers` - Controllers
+- `single_inverted_pendulum_description` - Robot model
+
+### Python Libraries
+
+The project requires the following Python packages:
+- **NumPy** (≥1.19.0) - Required for LQR control, energy calculations, and matrix operations
+- **SciPy** (optional) - For advanced control analysis and optimization
+- **Matplotlib** (optional) - For plotting and visualization during development
+
+These can be installed via apt or pip:
+```bash
+# Via apt (recommended for ROS 2)
+sudo apt install -y python3-numpy
+
+# Via pip (for latest versions)
+pip3 install numpy scipy matplotlib
+```
 
 ## Repository Structure
 

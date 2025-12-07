@@ -3,17 +3,43 @@
 <package format="3">
   <name>single_inverted_pendulum_simulation</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Gazebo simulation package for single inverted pendulum system</description>
   <maintainer email="teacher@todo.todo">teacher</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
-  
+
+  <!-- Core ROS 2 dependencies -->
   <depend>rclcpp</depend>
   <depend>rclpy</depend>
-  
+
+  <!-- Gazebo dependencies -->
+  <depend>gazebo_ros</depend>
+  <depend>gazebo_ros2_control</depend>
+  <depend>ros_gz_sim</depend>
+  <depend>ros_gz_bridge</depend>
+
+  <!-- Control dependencies -->
+  <depend>controller_manager</depend>
+  <depend>ros2_control</depend>
+  <depend>ros2_controllers</depend>
+  <depend>joint_state_broadcaster</depend>
+  <depend>effort_controllers</depend>
+
+  <!-- Message dependencies -->
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+
+  <!-- Robot description -->
+  <depend>single_inverted_pendulum_description</depend>
+
+  <!-- Launch dependencies -->
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>xacro</exec_depend>
+
+  <!-- Testing dependencies -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

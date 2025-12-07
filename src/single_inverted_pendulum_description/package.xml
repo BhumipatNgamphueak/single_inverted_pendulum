@@ -3,17 +3,33 @@
 <package format="3">
   <name>single_inverted_pendulum_description</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>URDF/xacro robot description for single inverted pendulum system</description>
   <maintainer email="teacher@todo.todo">teacher</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
-  
+
+  <!-- Core ROS 2 dependencies -->
   <depend>rclcpp</depend>
   <depend>rclpy</depend>
-  
+
+  <!-- URDF/xacro dependencies -->
+  <depend>urdf</depend>
+  <depend>xacro</depend>
+
+  <!-- Visualization dependencies -->
+  <depend>rviz2</depend>
+  <depend>joint_state_publisher</depend>
+  <depend>joint_state_publisher_gui</depend>
+  <depend>robot_state_publisher</depend>
+
+  <!-- Control dependencies -->
+  <depend>ros2_control</depend>
+  <depend>gazebo_ros2_control</depend>
+
+  <!-- Testing dependencies -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 

@@ -3,17 +3,32 @@
 <package format="3">
   <name>single_inverted_pendulum</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Single inverted pendulum control package with energy-based swing-up and LQR stabilization</description>
   <maintainer email="teacher@todo.todo">teacher</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
   <buildtool_depend>rosidl_default_generators</buildtool_depend>
-  
+
+  <!-- Core ROS 2 dependencies -->
   <depend>rclcpp</depend>
   <depend>rclpy</depend>
-  
+
+  <!-- Message dependencies -->
+  <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+
+  <!-- Control dependencies -->
+  <depend>controller_manager</depend>
+  <depend>ros2_control</depend>
+  <depend>ros2_controllers</depend>
+
+  <!-- Python dependencies -->
+  <exec_depend>python3-numpy</exec_depend>
+
+  <!-- Testing dependencies -->
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
